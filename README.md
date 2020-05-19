@@ -10,7 +10,7 @@ use quicksilver::{
     lifecycle::{run, EventStream, Settings, Window},
     Result, Timer,
 };
-use silver_animation::linear::SimpleLinearConfig;
+use silver_animation::SimpleLinearConfig;
 
 fn main() {
     run(
@@ -32,7 +32,7 @@ async fn app(window: Window, mut gfx: Graphics, mut events: EventStream) -> Resu
     ];
     let timing = Timer::time_per_second(8.);
     let mut simple_animation = SimpleLinearConfig { images, timing }.to_animation();
-    
+
     let image = Image::load(&gfx, "img1.png").await?;
     let timing = Timer::time_per_second(30.);
 
@@ -52,7 +52,7 @@ async fn app(window: Window, mut gfx: Graphics, mut events: EventStream) -> Resu
         max_frames: |_| amount_of_steps,
     }
     .to_animation();
-    
+
     let simple_animation_location = Rectangle::new((100, 100), (100, 100));
     let custom_animation_location = Rectangle::new((100, 150), (100, 100));
     gfx.clear(Color::WHITE);
