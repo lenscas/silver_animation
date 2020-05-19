@@ -1,12 +1,10 @@
-use crate::{ContainedAnimation, Resetable, SimpleAnimation};
+use crate::{BasicAnimation, ContainedAnimation, EditableState, Resetable};
 use quicksilver::geom::{Rectangle, Vector};
 
-///A simple wrapper over a SimpleAnimation and Rectangle
-///
-///Using this wrapper can make drawing easier if the location isn't going to change often or at all
+/// The struct used to turn a BasicAnimation into a ContainedAnimation
 pub struct BasicAnimationContainer<Animation>
 where
-    Animation: SimpleAnimation,
+    Animation: BasicAnimation,
 {
     pub(crate) animation: Animation,
     pub(crate) location: Rectangle,
@@ -14,7 +12,7 @@ where
 
 impl<Animation> ContainedAnimation for BasicAnimationContainer<Animation>
 where
-    Animation: SimpleAnimation,
+    Animation: BasicAnimation,
 {
     fn draw(&mut self, gfx: &mut quicksilver::graphics::Graphics) -> quicksilver::Result<()> {
         self.animation.draw(gfx, self.location)
@@ -38,7 +36,7 @@ where
 
 impl<Animation> Resetable for BasicAnimationContainer<Animation>
 where
-    Animation: SimpleAnimation + Resetable,
+    Animation: BasicAnimation + Resetable,
 {
     fn reset(&mut self) {
         self.animation.reset()
@@ -47,10 +45,22 @@ where
 
 impl<Animation> BasicAnimationContainer<Animation>
 where
-    Animation: SimpleAnimation,
+    Animation: BasicAnimation,
 {
     ///Turns the ContainedAnimation back into the SimpleAnimation
     pub fn unpack(self) -> (Animation, Rectangle) {
         (self.animation, self.location)
+    }
+}
+
+impl<Animation, T> EditableState<T> for BasicAnimationContainer<Animation>
+where
+    Animation: BasicAnimation + EditableState<T>,
+{
+    fn set_state(&mut self, new_state: T) {
+        self.animation.set_state(new_state)
+    }
+    fn get_state(&self) -> &T {
+        self.animation.get_state()
     }
 }

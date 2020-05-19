@@ -1,4 +1,4 @@
-use crate::{Resetable, SimpleAnimation};
+use crate::{contained::BasicAnimationContainer, BasicAnimation, Resetable};
 use quicksilver::{
     geom::Rectangle,
     graphics::{Graphics, Image},
@@ -26,7 +26,7 @@ fn simple_get_len(frames: &Vec<Image>) -> usize {
     frames.len()
 }
 
-///The simplest animation system. It renders the images in order, switching to the next one based on the animation speed.
+///The easiest animation system. It renders the images in order, switching to the next one based on the animation speed.
 pub struct SimpleLinearConfig {
     ///The images that make up the animation.
     pub images: Vec<Image>,
@@ -102,10 +102,14 @@ where
     }
     ///Draw the animation.
     pub fn draw(&mut self, gfx: &mut Graphics, location: Rectangle) -> Result<()> {
-        <Self as SimpleAnimation>::draw(self, gfx, location)
+        <Self as BasicAnimation>::draw(self, gfx, location)
+    }
+
+    pub fn contain(self, location: Rectangle) -> BasicAnimationContainer<Self> {
+        <Self as BasicAnimation>::contain(self, location)
     }
 }
-impl<T, DrawFunc, MaxFrames> SimpleAnimation for Linear<T, DrawFunc, MaxFrames>
+impl<T, DrawFunc, MaxFrames> BasicAnimation for Linear<T, DrawFunc, MaxFrames>
 where
     DrawFunc: Fn(&mut T, usize, &mut Graphics, Rectangle) -> Result<()>,
     MaxFrames: Fn(&T) -> usize,

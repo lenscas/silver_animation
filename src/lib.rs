@@ -1,15 +1,19 @@
-pub mod contained;
-pub mod linear;
+mod contained;
+mod linear;
 
-use contained::BasicAnimationContainer;
 use quicksilver::{
     geom::{Rectangle, Vector},
     graphics::Graphics,
     Result,
 };
 
-///The most simple animation system. It plays the animation at the given position
-pub trait SimpleAnimation {
+pub use crate::{
+    contained::BasicAnimationContainer,
+    linear::{Linear, LinearConfig, SimpleLinearConfig},
+};
+
+/// A bare bones trait that is simply used to draw an animation at the given position
+pub trait BasicAnimation {
     ///Draws the animation
     fn draw(&mut self, gfx: &mut Graphics, location: Rectangle) -> Result<()>;
     ///Turns the animation into a ContainedAnimation at the given position
@@ -25,7 +29,7 @@ pub trait SimpleAnimation {
         }
     }
 }
-///A more complex animation system than SimpleAnimation as it is in control of its own location.
+///The same as BasicAnimation, however ContainedAnimations are in control of their position
 ///
 ///This one can be used when the location is also part of the animation.
 pub trait ContainedAnimation {

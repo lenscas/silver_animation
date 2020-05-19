@@ -2,15 +2,15 @@
 //The main diffrence is that instead of just presenting a diffrent image every animation frame
 //we have full control over what we render
 
-//In this example we use it to make a square which gradually changes tint
+//In this example we improve upon example 1 to make a roating square but use some math instead of images to allow for much smaller step sizes
 
 use quicksilver::{
-    geom::{Rectangle, Vector},
+    geom::{Rectangle, Shape, Transform, Vector},
     graphics::{Color, Graphics, Image},
     lifecycle::{run, EventStream, Settings, Window},
     Result, Timer,
 };
-use silver_animation::linear::LinearConfig;
+use silver_animation::LinearConfig;
 
 fn main() {
     run(
@@ -32,7 +32,7 @@ async fn app(window: Window, mut gfx: Graphics, mut events: EventStream) -> Resu
     //now, we set how big the tint changes is during every animation frame
     let step_size: f32 = 5.;
     //and then calculate how many frames we need to reach the end
-    let amount_of_steps = (255. / step_size).ceil() as usize;
+    let amount_of_steps = (360. / step_size).ceil() as usize;
     let mut animation = LinearConfig {
         begin_state: image, //this is the state we start with. We can change this every draw call if we want, but for this example that is not needed
         timing,
@@ -42,11 +42,15 @@ async fn app(window: Window, mut gfx: Graphics, mut events: EventStream) -> Resu
         //gfx = the Graphics system
         //location = where on the screen we are supposed to draw it
         draw: |state, tick, gfx, location| {
-            gfx.draw_image_tinted(
-                state,
-                location,
-                Color::from_rgba(0, (step_size * tick as f32) as u8, 0, 1.0),
+            let origin = location.center();
+            let rotation = step_size * tick as f32;
+            gfx.set_transform(
+                Transform::translate(origin)
+                    * Transform::rotate(rotation)
+                    * Transform::translate(-origin),
             );
+            gfx.draw_image(state, location);
+            gfx.set_transform(Transform::IDENTITY);
             Ok(())
         },
         //how many frames our animation has

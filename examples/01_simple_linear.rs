@@ -9,7 +9,7 @@ use quicksilver::{
     lifecycle::{run, EventStream, Settings, Window},
     Result, Timer,
 };
-use silver_animation::linear::SimpleLinearConfig;
+use silver_animation::SimpleLinearConfig;
 
 fn main() {
     run(
