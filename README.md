@@ -5,12 +5,12 @@ It allows you to either use a list of images or take full control and render som
 ## example
 ```rust
 use quicksilver::{
-    geom::{Rectangle, Vector},
+    geom::{Rectangle, Shape, Transform, Vector},
     graphics::{Color, Graphics, Image},
-    lifecycle::{run, EventStream, Settings, Window},
-    Result, Timer,
+    run, Input, Result, Settings, Timer, Window,
 };
 use silver_animation::SimpleLinearConfig;
+use silver_animation::LinearConfig;
 
 fn main() {
     run(
@@ -23,7 +23,7 @@ fn main() {
     );
 }
 
-async fn app(window: Window, mut gfx: Graphics, mut events: EventStream) -> Result<()> {
+async fn app(window: Window, mut gfx: Graphics, mut inputs: Input) -> Result<()> {
     let images = vec![
         Image::load(&gfx, "img1.png").await?,
         Image::load(&gfx, "img2.png").await?,
@@ -59,7 +59,7 @@ async fn app(window: Window, mut gfx: Graphics, mut events: EventStream) -> Resu
     gfx.present(&window)?;
 
     loop {
-        while let Some(_) = events.next_event().await {}
+        while let Some(_) = inputs.next_event().await {}
         gfx.clear(Color::WHITE);
         simple_animation.draw(&mut gfx, simple_animation_location)?;
         custom_animation.draw(&mut gfx, custom_animation_location)?;

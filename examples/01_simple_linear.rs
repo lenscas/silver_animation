@@ -6,8 +6,13 @@
 use quicksilver::{
     geom::{Rectangle, Vector},
     graphics::{Color, Graphics, Image},
-    lifecycle::{run, EventStream, Settings, Window},
-    Result, Timer,
+    run,
+    Input,
+    //lifecycle::{run, EventStream, Settings, Window},
+    Result,
+    Settings,
+    Timer,
+    Window,
 };
 use silver_animation::SimpleLinearConfig;
 
@@ -22,7 +27,7 @@ fn main() {
     );
 }
 
-async fn app(window: Window, mut gfx: Graphics, mut events: EventStream) -> Result<()> {
+async fn app(window: Window, mut gfx: Graphics, mut input: Input) -> Result<()> {
     //load the images that you want to display
     let images = vec![
         Image::load(&gfx, "img1.png").await?,
@@ -38,7 +43,7 @@ async fn app(window: Window, mut gfx: Graphics, mut events: EventStream) -> Resu
     gfx.present(&window)?;
 
     loop {
-        while let Some(_) = events.next_event().await {}
+        while let Some(_) = input.next_event().await {}
         gfx.clear(Color::WHITE);
         animation.draw(&mut gfx, location)?;
         gfx.present(&window)?;
