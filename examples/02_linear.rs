@@ -10,7 +10,6 @@ use quicksilver::{
     run, Input, Result, Settings, Timer, Window,
 };
 use silver_animation::LinearConfig;
-use silver_animation::SimpleLinearConfig;
 fn main() {
     run(
         Settings {
