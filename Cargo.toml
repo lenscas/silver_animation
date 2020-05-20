@@ -1,5 +1,6 @@
 [package]
 name = "silver_animation"
+description = "A basic animation system for quicksilver"
 version = "0.1.0-alpha0.1"
 authors = ["lenscas <lenscas@gmail.com>"]
 edition = "2018"
