@@ -16,6 +16,10 @@ jobs:
       - uses: "actions-rs/toolchain@v1"
         with:
           toolchain: stable
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get install -y libudev-dev zlib1g-dev alsa libasound2-dev
       #Release to crates.io first as that has the highest chance of failing
       - name: Login to crates.io
         run: cargo login ${{ secrets.CRATES_TOKEN }}
