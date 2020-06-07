@@ -19,7 +19,7 @@ use silver_animation::SimpleLinearConfig;
 fn main() {
     run(
         Settings {
-            size: Vector::new(800.0, 600.0).into(),
+            size: Vector::new(800.0, 600.0),
             title: "Simple Linear Example",
             ..Settings::default()
         },
@@ -37,8 +37,8 @@ async fn app(window: Window, mut gfx: Graphics, mut input: Input) -> Result<()> 
     ];
     //set how long every image gets shown
     let timing = Timer::time_per_second(8.);
-    let mut animation = SimpleLinearConfig { images, timing }.to_animation();
-    let location = Rectangle::new((200, 200), (200, 200));
+    let mut animation = SimpleLinearConfig { images, timing }.into_animation();
+    let location = Rectangle::new(Vector::new(200., 200.), Vector::new(200., 200.));
     gfx.clear(Color::WHITE);
     gfx.present(&window)?;
 

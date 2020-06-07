@@ -13,7 +13,7 @@ use silver_animation::LinearConfig;
 fn main() {
     run(
         Settings {
-            size: Vector::new(800.0, 600.0).into(),
+            size: Vector::new(800.0, 600.0),
             title: "Linear Example",
             ..Settings::default()
         },
@@ -54,9 +54,9 @@ async fn app(window: Window, mut gfx: Graphics, mut inputs: Input) -> Result<()>
         //how many frames our animation has
         max_frames: |_| amount_of_steps,
     }
-    .to_animation();
+    .into_animation();
 
-    let location = Rectangle::new((200, 200), (200, 200));
+    let location = Rectangle::new(Vector::new(200., 200.), Vector::new(200., 200.));
     gfx.clear(Color::WHITE);
     gfx.present(&window)?;
 

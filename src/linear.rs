@@ -22,7 +22,7 @@ fn simple_draw(
     Ok(())
 }
 
-fn simple_get_len(frames: &Vec<Image>) -> usize {
+fn simple_get_len(frames: &[Image]) -> usize {
     frames.len()
 }
 
@@ -33,20 +33,21 @@ pub struct SimpleLinearConfig {
     ///Controls how fast the animation plays.
     pub timing: Timer,
 }
+
+pub type SimpleLinearGetSize = dyn Fn(&Vec<Image>) -> usize;
+pub type SimpleLinearConfigDraw =
+    dyn Fn(&mut Vec<Image>, usize, &mut Graphics, Rectangle) -> Result<()>;
+
 impl SimpleLinearConfig {
     ///Turn the config into an actual animation struct.
-    pub fn to_animation(
+    pub fn into_animation(
         self,
-    ) -> Linear<
-        Vec<Image>,
-        Box<dyn Fn(&mut Vec<Image>, usize, &mut Graphics, Rectangle) -> Result<()>>,
-        Box<dyn Fn(&Vec<Image>) -> usize>,
-    > {
+    ) -> Linear<Vec<Image>, Box<SimpleLinearConfigDraw>, Box<SimpleLinearGetSize>> {
         Linear::new(LinearConfig {
             begin_state: self.images,
             timing: self.timing,
             draw: Box::new(simple_draw),
-            max_frames: Box::new(simple_get_len),
+            max_frames: Box::new(|v| simple_get_len(v)),
         })
     }
 }
@@ -74,7 +75,7 @@ where
     MaxFrames: Fn(&T) -> usize,
 {
     ///Turn the config into an actual animation.
-    pub fn to_animation(self) -> Linear<T, DrawFunc, MaxFrames> {
+    pub fn into_animation(self) -> Linear<T, DrawFunc, MaxFrames> {
         Linear::new(self)
     }
 }
@@ -115,12 +116,7 @@ where
     MaxFrames: Fn(&T) -> usize,
 {
     fn draw(&mut self, gfx: &mut Graphics, location: Rectangle) -> Result<()> {
-        let frames_passed = self
-            .config
-            .timing
-            .exhaust()
-            .map(|v| usize::from(v))
-            .unwrap_or(0);
+        let frames_passed = self.config.timing.exhaust().map(usize::from).unwrap_or(0);
 
         match frames_passed.checked_add(self.last_frame) {
             Some(x) => {
