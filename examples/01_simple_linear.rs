@@ -29,12 +29,11 @@ fn main() {
 
 async fn app(window: Window, mut gfx: Graphics, mut input: Input) -> Result<()> {
     //load the images that you want to display
-    let images = vec![
-        Image::load(&gfx, "img1.png").await?,
-        Image::load(&gfx, "img2.png").await?,
-        Image::load(&gfx, "img3.png").await?,
-        Image::load(&gfx, "img4.png").await?,
-    ];
+    let i1 = Image::load(&gfx, "img1.png").await?;
+    let i2 = Image::load(&gfx, "img2.png").await?;
+    let i3 = Image::load(&gfx, "img3.png").await?;
+    let i4 = Image::load(&gfx, "img4.png").await?;
+    let images = [i1, i2, i3, i4].into();
     //set how long every image gets shown
     let timing = Timer::time_per_second(8.);
     let mut animation = SimpleLinearConfig { images, timing }.into_animation();
@@ -43,7 +42,7 @@ async fn app(window: Window, mut gfx: Graphics, mut input: Input) -> Result<()> 
     gfx.present(&window)?;
 
     loop {
-        while let Some(_) = input.next_event().await {}
+        while input.next_event().await.is_some() {}
         gfx.clear(Color::WHITE);
         animation.draw(&mut gfx, location)?;
         gfx.present(&window)?;

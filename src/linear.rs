@@ -1,6 +1,6 @@
 use crate::{contained::BasicAnimationContainer, BasicAnimation, Resetable};
 use quicksilver::{
-    geom::Rectangle,
+    geom::{Rectangle, Vector},
     graphics::{Graphics, Image},
     Result, Timer,
 };
@@ -103,14 +103,14 @@ where
     }
     ///Draw the animation.
     pub fn draw(&mut self, gfx: &mut Graphics, location: Rectangle) -> Result<()> {
-        <Self as BasicAnimation>::draw(self, gfx, location)
+        <Self as BasicAnimation<_, _>>::draw(self, gfx, location)
     }
 
-    pub fn contain(self, location: Rectangle) -> BasicAnimationContainer<Self> {
-        <Self as BasicAnimation>::contain(self, location)
+    pub fn contain(self, location: Rectangle) -> BasicAnimationContainer<Self, Vector, Rectangle> {
+        <Self as BasicAnimation<_, _>>::contain(self, location)
     }
 }
-impl<T, DrawFunc, MaxFrames> BasicAnimation for Linear<T, DrawFunc, MaxFrames>
+impl<T, DrawFunc, MaxFrames> BasicAnimation<Vector, Rectangle> for Linear<T, DrawFunc, MaxFrames>
 where
     DrawFunc: Fn(&mut T, usize, &mut Graphics, Rectangle) -> Result<()>,
     MaxFrames: Fn(&T) -> usize,
