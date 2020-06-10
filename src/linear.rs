@@ -1,4 +1,4 @@
-use crate::{contained::BasicAnimationContainer, BasicAnimation, Resetable};
+use crate::{contained::BasicAnimationContainer, AnimationTimer, BasicAnimation, Resetable};
 use quicksilver::{
     geom::{Rectangle, Vector},
     graphics::{Graphics, Image},
@@ -86,8 +86,9 @@ where
     DrawFunc: Fn(&mut T, usize, &mut Graphics, Rectangle) -> Result<()>,
     MaxFrames: Fn(&T) -> usize,
 {
-    config: LinearConfig<T, DrawFunc, MaxFrames>,
-    last_frame: usize,
+    state: T,
+    draw: DrawFunc,
+    timer: AnimationTimer<T, MaxFrames>,
 }
 impl<T, DrawFunc, MaxFrames> Linear<T, DrawFunc, MaxFrames>
 where
@@ -97,8 +98,9 @@ where
     ///Create a new animation.
     pub fn new(config: LinearConfig<T, DrawFunc, MaxFrames>) -> Self {
         Self {
-            config,
-            last_frame: 0,
+            draw: config.draw,
+            state: config.begin_state,
+            timer: AnimationTimer::new(config.max_frames, config.timing),
         }
     }
     ///Draw the animation.
@@ -116,19 +118,9 @@ where
     MaxFrames: Fn(&T) -> usize,
 {
     fn draw(&mut self, gfx: &mut Graphics, location: Rectangle) -> Result<()> {
-        let frames_passed = self.config.timing.exhaust().map(usize::from).unwrap_or(0);
+        let frame = self.timer.get_current_frame(&self.state);
 
-        match frames_passed.checked_add(self.last_frame) {
-            Some(x) => {
-                self.last_frame = x % (self.config.max_frames)(&self.config.begin_state);
-            }
-            None => {
-                let max_size = (self.config.max_frames)(&self.config.begin_state);
-                let bound_to_frame = frames_passed % max_size;
-                self.last_frame = (bound_to_frame + self.last_frame) % max_size;
-            }
-        }
-        (self.config.draw)(&mut self.config.begin_state, self.last_frame, gfx, location)
+        (self.draw)(&mut self.state, frame, gfx, location)
     }
 }
 
@@ -138,6 +130,6 @@ where
     MaxFrames: Fn(&T) -> usize,
 {
     fn reset(&mut self) {
-        self.config.timing.reset()
+        self.timer.reset()
     }
 }

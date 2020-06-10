@@ -4,7 +4,7 @@ mod linear;
 use quicksilver::{
     geom::{Circle, Rectangle, Vector},
     graphics::Graphics,
-    Result,
+    Result, Timer,
 };
 
 pub use crate::{
@@ -97,4 +97,44 @@ pub trait EditableState<T> {
 ///This trait can be implemented if an animation can be reset (Go back to the first frame)
 pub trait Resetable {
     fn reset(&mut self);
+}
+
+///This struct decides what frame count the animation is currently at, it automatically resets to 0.
+pub struct AnimationTimer<T, MaxFrames: Fn(&T) -> usize> {
+    timer: Timer,
+    at_frame: usize,
+    max_frames: MaxFrames,
+    _t: PhantomData<T>,
+}
+impl<T, MaxFrames> AnimationTimer<T, MaxFrames>
+where
+    MaxFrames: Fn(&T) -> usize,
+{
+    pub fn new(max_frames: MaxFrames, timer: Timer) -> AnimationTimer<T, MaxFrames> {
+        Self {
+            timer,
+            max_frames,
+            at_frame: 0,
+            _t: PhantomData,
+        }
+    }
+    pub fn get_current_frame(&mut self, state: &T) -> usize {
+        let frames_passed = self.timer.exhaust().map(usize::from).unwrap_or(0);
+
+        match frames_passed.checked_add(self.at_frame) {
+            Some(x) => {
+                self.at_frame = x % (self.max_frames)(state);
+            }
+            None => {
+                let max_size = (self.max_frames)(state);
+                let bound_to_frame = frames_passed % max_size;
+                self.at_frame = (bound_to_frame + self.at_frame) % max_size;
+            }
+        }
+        self.at_frame
+    }
+    pub fn reset(&mut self) {
+        self.at_frame = 0;
+        self.timer.reset();
+    }
 }
