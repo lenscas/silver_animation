@@ -61,7 +61,7 @@ async fn app(window: Window, mut gfx: Graphics, mut inputs: Input) -> Result<()>
     gfx.present(&window)?;
 
     loop {
-        while let Some(_) = inputs.next_event().await {}
+        while inputs.next_event().await.is_some() {}
         gfx.clear(Color::WHITE);
         animation.draw(&mut gfx, location)?;
         gfx.present(&window)?;
