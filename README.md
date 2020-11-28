@@ -1,12 +1,12 @@
-## Alpha notice
-Although I am happy with the current api provided by silver_animation , it is targeting the an alpha version of quicksilver.
-This means that things can (and probably will) break or change one day or another for one reason or another.
-
 # silver_animation
 silver_animation is a simple and basic animation system for quicksilver.
 It allows you to either use a list of images or take full control and render something however you want.
 
 It also provides a set of traits that provide a base on how to interact with animations. These can be used as building blocks for your own animation system(s)
+
+# Maintenance
+
+Since quicksilver is no longer actively developped , I no longer use it. As a result, I also stopped using silver_animation. I will still respond to pull requests and the like, but don't expect any new features from me.
 
 ## example
 ```rust
